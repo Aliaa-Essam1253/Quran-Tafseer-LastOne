@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:quraan_tafseer/constants/colors.dart';
 // ONLY just_audio — aliased to avoid AudioPlayer/PlayerState ambiguity
@@ -120,7 +119,7 @@ class _SurahAudioScreenState extends State<SurahAudioScreen> {
       appBar: AppBar(
         title: Text(widget.title,
             style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
-        backgroundColor: _isDark ? MyColors.darkGreen : MyColors.deepGreen,
+        backgroundColor: _isDark ? MyColors.darkBlue : MyColors.deepBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
@@ -180,14 +179,14 @@ class _SurahAudioScreenState extends State<SurahAudioScreen> {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: _isDark
-                          ? [MyColors.darkGreen, MyColors.darkGrey]
-                          : [MyColors.deepGreen, MyColors.deepGreen.withOpacity(0.6)],
+                          ? [MyColors.darkBlue, MyColors.darkGrey]
+                          : [MyColors.deepBlue, MyColors.deepBlue.withOpacity(0.6)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                          color: MyColors.deepGreen.withOpacity(0.35),
+                          color: MyColors.deepBlue.withOpacity(0.35),
                           blurRadius: 24,
                           spreadRadius: 4),
                     ],
@@ -228,7 +227,7 @@ class _SurahAudioScreenState extends State<SurahAudioScreen> {
                           activeTrackColor: MyColors.deepBlue,
                           inactiveTrackColor: _isDark
                               ? Colors.white24
-                              : MyColors.deepGreen.withOpacity(0.2),
+                              : MyColors.deepBlue.withOpacity(0.2),
                           thumbColor: MyColors.deepBlue,
                           overlayColor: MyColors.deepBlue.withOpacity(0.15),
                         ),
@@ -258,13 +257,15 @@ class _SurahAudioScreenState extends State<SurahAudioScreen> {
                 const SizedBox(height: 24),
 
                 // Controls
+                // RTL layout: first child = right side, last child = left side.
+                // Right = skip back, left = skip forward.
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _CircleButton(
                         icon: Icons.forward_10_rounded,
                         isDark: _isDark,
-                        onTap: isPlaying ? () => _seekBy(10) : null),
+                        onTap: isPlaying ? () => _seekBy(-10) : null),
                     const SizedBox(width: 24),
                     GestureDetector(
                       onTap: _togglePlay,
@@ -298,7 +299,7 @@ class _SurahAudioScreenState extends State<SurahAudioScreen> {
                     _CircleButton(
                         icon: Icons.replay_10_rounded,
                         isDark: _isDark,
-                        onTap: isPlaying ? () => _seekBy(-10) : null),
+                        onTap: isPlaying ? () => _seekBy(10) : null),
                   ],
                 ),
                 const SizedBox(height: 32),

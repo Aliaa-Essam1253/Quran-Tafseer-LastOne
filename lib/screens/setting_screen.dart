@@ -76,7 +76,7 @@ class SettingsScreen extends StatelessWidget {
           onTap: () => showAboutDialog(
             context: context,
             applicationName: 'التفسير السعيد',
-            applicationVersion: 'الإصدار 1.0.0',
+            applicationVersion: 'الإصدار 2 + 1.0.1',
             children: const [
               Text(
                 'تطبيق متكامل لقراءة القرآن الكريم والاستماع إليه وتصفح التفسير بسهولة',

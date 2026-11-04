@@ -623,13 +623,15 @@ class _SurahPlayerScreenState extends State<SurahPlayerScreen> {
     required bool canPlay,
     required String? audioUrl,
   }) {
+    // RTL layout: first child = right side, last child = left side.
+    // Right = skip back, left = skip forward (matches the RTL slider direction).
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _SkipButton(
           icon: Icons.forward_5_rounded,
           isDark: _isDark,
-          onTap: canPlay && isPlaying ? _seekForward : null,
+          onTap: canPlay && isPlaying ? _seekBackward : null,
         ),
         const SizedBox(width: 28),
         GestureDetector(
@@ -667,7 +669,7 @@ class _SurahPlayerScreenState extends State<SurahPlayerScreen> {
         _SkipButton(
           icon: Icons.replay_5_rounded,
           isDark: _isDark,
-          onTap: canPlay && isPlaying ? _seekBackward : null,
+          onTap: canPlay && isPlaying ? _seekForward : null,
         ),
       ],
     );
@@ -779,7 +781,11 @@ class _SurahPlayerScreenState extends State<SurahPlayerScreen> {
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       isScrollControlled: true,
-      builder: (_) => _ReciterSheet(provider: provider, isDark: _isDark),
+      useSafeArea: true,
+      builder: (_) => SafeArea(
+        top: false,
+        child: _ReciterSheet(provider: provider, isDark: _isDark),
+      ),
     );
   }
 }

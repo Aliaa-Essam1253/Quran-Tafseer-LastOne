@@ -14,7 +14,7 @@ import 'package:quraan_tafseer/theme/theme_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:io';
 
-import 'google_drive_service.dart'; // for HttpClient
+//import 'google_drive_service.dart'; // for HttpClient
 
 class QuranReader extends StatefulWidget {
   final String surahName;
@@ -191,27 +191,32 @@ class _QuranReaderState extends State<QuranReader> {
   void _showSpeedOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      // Android 15 edge-to-edge: keep the sheet clear of the system nav bar.
+      useSafeArea: true,
       builder: (ctx) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              const Text(
-                'سرعة التشغيل',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                const Text(
+                  'سرعة التشغيل',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
 
-              _speedTile('0.75x', 0.75),
-              _speedTile('1.0x (عادي)', 1.0),
-              _speedTile('1.25x', 1.25),
-              _speedTile('1.5x', 1.5),
-              _speedTile('2.0x', 2.0),
+                _speedTile('0.75x', 0.75),
+                _speedTile('1.0x (عادي)', 1.0),
+                _speedTile('1.25x', 1.25),
+                _speedTile('1.5x', 1.5),
+                _speedTile('2.0x', 2.0),
 
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         );
       },
@@ -807,10 +812,14 @@ class _QuranReaderState extends State<QuranReader> {
 
     showModalBottomSheet(
       context: context,
+      // Android 15 edge-to-edge: keep the sheet clear of the system nav bar.
+      useSafeArea: true,
       builder: (BuildContext ctx) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Column(
+          child: SafeArea(
+            top: false,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
@@ -889,6 +898,7 @@ class _QuranReaderState extends State<QuranReader> {
                 },
               ),
             ],
+          ),
           ),
         );
       },
@@ -1521,7 +1531,7 @@ class _QuranReaderState extends State<QuranReader> {
                                 children: [
                                   IconButton(
                                     icon: Icon(
-                                      Icons.replay_10,
+                                      Icons.forward_10,
                                       size: 36,
                                       color: textColor,
                                     ),
@@ -1554,7 +1564,7 @@ class _QuranReaderState extends State<QuranReader> {
 
                                   IconButton(
                                     icon: Icon(
-                                      Icons.forward_10,
+                                      Icons.replay_10,
                                       size: 36,
                                       color: textColor,
                                     ),
