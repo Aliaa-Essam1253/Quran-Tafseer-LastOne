@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quraan_tafseer/constants/colors.dart';
 import 'package:quraan_tafseer/models/surah_model.dart';
+import 'package:quraan_tafseer/screens/intro_text_screen.dart';
 import 'package:quraan_tafseer/screens/surah_audio_screen.dart';
 import 'package:quraan_tafseer/screens/tafseer_screen.dart';
 import 'package:quraan_tafseer/surahTafseerMap.dart';
@@ -21,11 +22,15 @@ class _TafseerListScreenState extends State<TafseerListScreen> {
   List<Surah> surahs = [];
   List<Surah> filteredSurahs = [];
   final TextEditingController searchController = TextEditingController();
+  bool _hasIntroText = false;
 
   @override
   void initState() {
     super.initState();
     _loadSurahs();
+    loadIntroBlocks().then((blocks) {
+      if (mounted) setState(() => _hasIntroText = blocks != null);
+    });
   }
 
   Future<void> _loadSurahs() async {
@@ -70,6 +75,13 @@ class _TafseerListScreenState extends State<TafseerListScreen> {
     );
   }
 
+  void _readIntro() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const IntroTextScreen()),
+    );
+  }
+
   @override
   void dispose() {
     searchController.dispose();
@@ -103,7 +115,10 @@ class _TafseerListScreenState extends State<TafseerListScreen> {
                     itemCount: filteredSurahs.length + (_showIntro ? 1 : 0),
                     itemBuilder: (context, i) {
                       if (_showIntro && i == 0) {
-                        return _IntroCard(onTap: _openIntro);
+                        return _IntroCard(
+                          onListen: _openIntro,
+                          onRead: _hasIntroText ? _readIntro : null,
+                        );
                       }
                       final index = _showIntro ? i - 1 : i;
                       return surahCard(
@@ -128,11 +143,13 @@ class _TafseerListScreenState extends State<TafseerListScreen> {
   }
 }
 
-/// Highlighted card at the top of the tafseer list that opens the
-/// audio introduction of the book.
+/// Highlighted card at the top of the tafseer list for the book's
+/// introduction: listen to the recording and (when the text is available)
+/// read it.
 class _IntroCard extends StatelessWidget {
-  final VoidCallback onTap;
-  const _IntroCard({required this.onTap});
+  final VoidCallback onListen;
+  final VoidCallback? onRead;
+  const _IntroCard({required this.onListen, this.onRead});
 
   @override
   Widget build(BuildContext context) {
@@ -158,52 +175,124 @@ class _IntroCard extends StatelessWidget {
               ),
             ],
           ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: gold.withOpacity(0.15),
-                      border: Border.all(color: gold, width: 1.2),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: gold.withOpacity(0.15),
+                        border: Border.all(color: gold, width: 1.2),
+                      ),
+                      child: const Icon(Icons.menu_book_rounded,
+                          color: gold, size: 24),
                     ),
-                    child: const Icon(Icons.headphones, color: gold, size: 24),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'مقدمة التفسير',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'مقدمة التفسير',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'تسجيل صوتي · نحو ١٠ دقائق · ابدأ من هنا',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.75),
+                          const SizedBox(height: 4),
+                          Text(
+                            onRead != null
+                                ? 'اقرأها أو استمع إليها · ابدأ من هنا'
+                                : 'تسجيل صوتي · نحو ١٠ دقائق · ابدأ من هنا',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const Icon(Icons.play_circle_fill, color: gold, size: 36),
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    if (onRead != null) ...[
+                      Expanded(
+                        child: _IntroButton(
+                          icon: Icons.menu_book_rounded,
+                          label: 'قراءة',
+                          filled: true,
+                          onTap: onRead!,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                    ],
+                    Expanded(
+                      child: _IntroButton(
+                        icon: Icons.headphones,
+                        label: 'استماع',
+                        filled: onRead == null,
+                        onTap: onListen,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IntroButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool filled;
+  final VoidCallback onTap;
+  const _IntroButton({
+    required this.icon,
+    required this.label,
+    required this.filled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const gold = MyColors.audioGold;
+    final fg = filled ? MyColors.darkBlue : gold;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Ink(
+        height: 42,
+        decoration: BoxDecoration(
+          color: filled ? gold : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: gold, width: 1.2),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 20, color: fg),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: fg,
+              ),
+            ),
+          ],
         ),
       ),
     );
